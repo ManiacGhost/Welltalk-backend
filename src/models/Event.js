@@ -17,7 +17,7 @@ const Event = sequelize.define('Event', {
     unique: true,
   },
   description: {
-    type: DataTypes.LONGTEXT,
+    type: DataTypes.TEXT('long'),
     allowNull: false,
   },
   eventDate: {

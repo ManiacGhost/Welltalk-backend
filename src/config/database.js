@@ -1,10 +1,15 @@
 const { Sequelize } = require('sequelize');
 const logger = require('../utils/logger');
 
+// Get password from env, use null if empty or not set
+const password = (process.env.DB_PASSWORD && process.env.DB_PASSWORD.trim()) 
+  ? process.env.DB_PASSWORD 
+  : null;
+
 const sequelize = new Sequelize(
   process.env.DB_NAME || 'welltalk',
   process.env.DB_USER || 'root',
-  process.env.DB_PASSWORD || '',
+  password,
   {
     host: process.env.DB_HOST || 'localhost',
     port: process.env.DB_PORT || 3306,
@@ -24,9 +29,8 @@ const connectDB = async () => {
     await sequelize.authenticate();
     logger.info('✅ MySQL Database Connected Successfully');
     
-    // Sync models (create tables if they don't exist)
-    await sequelize.sync({ alter: process.env.NODE_ENV === 'development' });
-    logger.info('✅ Database Models Synchronized');
+    // DO NOT sync models here - only authenticate connection
+    // Use 'npm run migrate' for database schema updates
     
     return sequelize;
   } catch (error) {

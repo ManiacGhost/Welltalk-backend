@@ -1,0 +1,741 @@
+{
+  "info": {
+    "_postman_id": "welltalk-api",
+    "name": "Welltalk API",
+    "description": "Complete API collection for Welltalk Backend - Blog, Categories, and Events Management",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "API Health Check",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/health",
+              "host": ["{{base_url}}"],
+              "path": ["api", "health"]
+            }
+          }
+        },
+        {
+          "name": "API Version Info",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Categories",
+      "item": [
+        {
+          "name": "Get All Categories",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories"]
+            }
+          }
+        },
+        {
+          "name": "Get Category by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories", "1"]
+            }
+          }
+        },
+        {
+          "name": "Create Category",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mental Health\",\n  \"slug\": \"mental-health\",\n  \"description\": \"Articles about mental health and wellness\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories"]
+            }
+          }
+        },
+        {
+          "name": "Update Category",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mental Health Updated\",\n  \"slug\": \"mental-health-updated\",\n  \"description\": \"Updated description\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Category",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Blogs",
+      "item": [
+        {
+          "name": "Get All Blogs",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/blogs?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "blogs"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Blogs - Draft Only",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/blogs?status=draft",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "blogs"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "draft"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get All Blogs - Published Only",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/blogs?status=published",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "blogs"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "published"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Blogs by Category",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/blogs?categoryId=1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "blogs"],
+              "query": [
+                {
+                  "key": "categoryId",
+                  "value": "1"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Blog by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/blogs/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "blogs", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Blog by Slug",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/blogs/my-blog-title",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "blogs", "my-blog-title"]
+            }
+          }
+        },
+        {
+          "name": "Create Blog (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"5 Ways to Boost Your Immunity\",\n  \"slug\": \"5-ways-boost-immunity\",\n  \"content\": \"<p>This is the blog content with HTML formatting</p>\",\n  \"shortDescription\": \"Learn 5 effective ways to strengthen your immune system\",\n  \"author\": \"Dr. Jane Smith\",\n  \"categoryId\": 1,\n  \"readingTime\": 5,\n  \"tags\": [\"immunity\", \"health\", \"wellness\"],\n  \"status\": \"draft\",\n  \"seoTitle\": \"5 Ways to Boost Your Immunity - Expert Tips\",\n  \"seoDescription\": \"Learn proven methods to strengthen your immune system from health experts\",\n  \"focusKeyword\": \"boost immunity\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/blogs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "blogs"]
+            }
+          }
+        },
+        {
+          "name": "Create Blog (with Featured Image)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "My Blog Post",
+                  "type": "text"
+                },
+                {
+                  "key": "slug",
+                  "value": "my-blog-post",
+                  "type": "text"
+                },
+                {
+                  "key": "content",
+                  "value": "<p>Blog content here</p>",
+                  "type": "text"
+                },
+                {
+                  "key": "shortDescription",
+                  "value": "Short description",
+                  "type": "text"
+                },
+                {
+                  "key": "author",
+                  "value": "Author Name",
+                  "type": "text"
+                },
+                {
+                  "key": "categoryId",
+                  "value": "1",
+                  "type": "text"
+                },
+                {
+                  "key": "readingTime",
+                  "value": "5",
+                  "type": "text"
+                },
+                {
+                  "key": "tags",
+                  "value": "[\"health\", \"wellness\"]",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "draft",
+                  "type": "text"
+                },
+                {
+                  "key": "seoTitle",
+                  "value": "SEO Title",
+                  "type": "text"
+                },
+                {
+                  "key": "seoDescription",
+                  "value": "SEO Description",
+                  "type": "text"
+                },
+                {
+                  "key": "focusKeyword",
+                  "value": "focus keyword",
+                  "type": "text"
+                },
+                {
+                  "key": "featuredImage",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/blogs",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "blogs"]
+            }
+          }
+        },
+        {
+          "name": "Update Blog",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Blog Title\",\n  \"slug\": \"updated-blog-title\",\n  \"content\": \"<p>Updated content</p>\",\n  \"shortDescription\": \"Updated short description\",\n  \"author\": \"Dr. Jane Smith\",\n  \"categoryId\": 2,\n  \"readingTime\": 8,\n  \"tags\": [\"updated\", \"health\"],\n  \"status\": \"published\",\n  \"seoTitle\": \"Updated SEO Title\",\n  \"seoDescription\": \"Updated SEO Description\",\n  \"focusKeyword\": \"updated keyword\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/blogs/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "blogs", "1"]
+            }
+          }
+        },
+        {
+          "name": "Publish Blog (Change Status)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"published\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/blogs/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "blogs", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Blog",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/blogs/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "blogs", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Events",
+      "item": [
+        {
+          "name": "Get All Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/events?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "events"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Upcoming Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/events?status=upcoming",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "events"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "upcoming"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Completed Events",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/events?status=completed",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "events"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "completed"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Event by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/events/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "events", "1"]
+            }
+          }
+        },
+        {
+          "name": "Get Event by Slug",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/events/morning-yoga-mindfulness",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "events", "morning-yoga-mindfulness"]
+            }
+          }
+        },
+        {
+          "name": "Create Event (JSON)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Morning Yoga & Mindfulness Workshop\",\n  \"slug\": \"morning-yoga-mindfulness\",\n  \"description\": \"<p>Join us for an invigorating morning yoga session focused on mindfulness and wellness</p>\",\n  \"eventDate\": \"2026-04-15T06:30:00Z\",\n  \"eventTime\": \"06:30\",\n  \"location\": \"Quiet Soul Studio, South Delhi\",\n  \"organizerName\": \"Wellness Team\",\n  \"ticketLink\": \"https://example.com/tickets\",\n  \"status\": \"upcoming\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/events",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "events"]
+            }
+          }
+        },
+        {
+          "name": "Create Event (with Images)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Event Title",
+                  "type": "text"
+                },
+                {
+                  "key": "slug",
+                  "value": "event-slug",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Event description",
+                  "type": "text"
+                },
+                {
+                  "key": "eventDate",
+                  "value": "2026-04-15T06:30:00Z",
+                  "type": "text"
+                },
+                {
+                  "key": "eventTime",
+                  "value": "06:30",
+                  "type": "text"
+                },
+                {
+                  "key": "location",
+                  "value": "Location details",
+                  "type": "text"
+                },
+                {
+                  "key": "organizerName",
+                  "value": "Organization Name",
+                  "type": "text"
+                },
+                {
+                  "key": "ticketLink",
+                  "value": "https://example.com",
+                  "type": "text"
+                },
+                {
+                  "key": "status",
+                  "value": "upcoming",
+                  "type": "text"
+                },
+                {
+                  "key": "coverImage",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "galleryImages",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "galleryImages",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/events",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "events"]
+            }
+          }
+        },
+        {
+          "name": "Update Event",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Event Title\",\n  \"slug\": \"updated-event-slug\",\n  \"description\": \"<p>Updated description</p>\",\n  \"eventDate\": \"2026-05-20T09:00:00Z\",\n  \"eventTime\": \"09:00\",\n  \"location\": \"New Location\",\n  \"organizerName\": \"Updated Organization\",\n  \"ticketLink\": \"https://updated-link.com\",\n  \"status\": \"upcoming\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/events/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "events", "1"]
+            }
+          }
+        },
+        {
+          "name": "Mark Event as Completed",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"completed\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/events/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "events", "1"]
+            }
+          }
+        },
+        {
+          "name": "Cancel Event",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"cancelled\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/events/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "events", "1"]
+            }
+          }
+        },
+        {
+          "name": "Delete Event",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/events/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "events", "1"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    }
+  ]
+}
