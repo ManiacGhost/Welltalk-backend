@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "welltalk-api",
     "name": "Welltalk API",
-    "description": "Complete API collection for Welltalk Backend - Blog, Categories, and Events Management",
+    "description": "Complete API collection for Welltalk Backend - Blog, Categories, Events, and Contact Forms Management",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "item": [
@@ -725,6 +725,137 @@
               "raw": "{{base_url}}/api/v1/events/1",
               "host": ["{{base_url}}"],
               "path": ["api", "v1", "events", "1"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Contact Forms",
+      "item": [
+        {
+          "name": "Submit Contact Form",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john.doe@example.com\",\n  \"phone\": \"+1 (555) 123-4567\",\n  \"message\": \"I would like to get more information about your wellness programs and pricing. Please contact me at your earliest convenience.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/contact-forms",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "contact-forms"]
+            }
+          }
+        },
+        {
+          "name": "Get All Contact Forms",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/contact-forms?page=1&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "contact-forms"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Pending Contact Forms",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/contact-forms?status=pending",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "contact-forms"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Contact Form by ID",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/contact-forms/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "contact-forms", "1"]
+            }
+          }
+        },
+        {
+          "name": "Update Contact Form Status",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"replied\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/contact-forms/1/status",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "contact-forms", "1", "status"]
+            }
+          }
+        },
+        {
+          "name": "Delete Contact Form",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/contact-forms/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "contact-forms", "1"]
             }
           }
         }
