@@ -12,11 +12,13 @@ const { connectDB } = require('./config/database');
 const categoryRoutes = require('./routes/categoryRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const contactFormRoutes = require('./routes/contactFormRoutes');
 
 // Import models to initialize them
 require('./models/Category');
 require('./models/Blog');
 require('./models/Event');
+require('./models/ContactForm');
 
 // Initialize Express App
 const app = express();
@@ -39,6 +41,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/blogs', blogRoutes);
 app.use('/api/v1/events', eventRoutes);
+app.use('/api/v1/contact-forms', contactFormRoutes);
 
 // Health Check Route
 app.get('/api/health', (req, res) => {
@@ -54,6 +57,7 @@ app.get('/api/v1', (req, res) => {
       blogs: '/api/v1/blogs',
       categories: '/api/v1/categories',
       events: '/api/v1/events',
+      contactForms: '/api/v1/contact-forms',
     },
     status: 'active',
   });
