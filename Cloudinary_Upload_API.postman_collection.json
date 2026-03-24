@@ -1,0 +1,292 @@
+{
+  "info": {
+    "_postman_id": "cloudinary-uploads",
+    "name": "Welltalk Cloudinary Image Uploads",
+    "description": "Image upload endpoints using Cloudinary CDN",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Upload Featured Image",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "/path/to/image.jpg",
+              "disabled": false
+            },
+            {
+              "key": "type",
+              "value": "blogs",
+              "type": "text",
+              "disabled": false
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/upload/featured",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "upload", "featured"]
+        },
+        "description": "Upload a featured/thumbnail image to Cloudinary.\n\nType can be: blogs, articles, events"
+      }
+    },
+    {
+      "name": "Upload Inline Image",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "/path/to/image.jpg",
+              "disabled": false
+            },
+            {
+              "key": "type",
+              "value": "blogs",
+              "type": "text",
+              "disabled": false
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/upload/inline",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "upload", "inline"]
+        },
+        "description": "Upload an inline/body image for rich text editors.\n\nType can be: blogs, articles, events"
+      }
+    },
+    {
+      "name": "Upload Gallery Images (Multiple)",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "files",
+              "type": "file",
+              "src": "/path/to/image1.jpg",
+              "disabled": false
+            },
+            {
+              "key": "files",
+              "type": "file",
+              "src": "/path/to/image2.jpg",
+              "disabled": false
+            },
+            {
+              "key": "type",
+              "value": "events",
+              "type": "text",
+              "disabled": false
+            }
+          ]
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/upload/gallery",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "upload", "gallery"]
+        },
+        "description": "Upload multiple gallery images at once.\n\nType can be: events, blogs, articles"
+      }
+    },
+    {
+      "name": "Delete Image from Cloudinary",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"imageUrl\": \"https://res.cloudinary.com/your-cloud-name/image/upload/v1234567890/welltalk/blogs/featured/image.jpg\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/upload/delete",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "upload", "delete"]
+        },
+        "description": "Delete an image from Cloudinary.\n\nProvide the full Cloudinary URL returned during upload."
+      }
+    },
+    {
+      "name": "Create Blog with Featured Image",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Understanding Wellness\",\n  \"slug\": \"understanding-wellness\",\n  \"content\": \"<p>This is the blog content with images...</p><img src=\\\"https://res.cloudinary.com/your-cloud-name/image/upload/...\\\" />\",\n  \"shortDescription\": \"A guide to modern wellness\",\n  \"author\": \"Jane Doe\",\n  \"categoryId\": 1,\n  \"featuredImage\": \"https://res.cloudinary.com/your-cloud-name/image/upload/v1234567890/welltalk/blogs/featured/thumbnail.jpg\",\n  \"readingTime\": 5,\n  \"tags\": [\"wellness\", \"health\", \"tips\"],\n  \"status\": \"published\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/blogs",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "blogs"]
+        },
+        "description": "Create a blog with featured image URL from Cloudinary.\n\nUse the URL returned from /api/v1/upload/featured endpoint."
+      }
+    },
+    {
+      "name": "Create Event with Cover and Gallery Images",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"title\": \"Annual Wellness Conference 2024\",\n  \"slug\": \"annual-wellness-conference-2024\",\n  \"description\": \"Join us for our annual wellness conference featuring expert speakers and workshops.\",\n  \"eventDate\": \"2024-06-15\",\n  \"eventTime\": \"09:00\",\n  \"location\": \"Convention Center, New York\",\n  \"organizerName\": \"Welltalk Team\",\n  \"ticketLink\": \"https://tickets.example.com\",\n  \"coverImage\": \"https://res.cloudinary.com/your-cloud-name/image/upload/v1234567890/welltalk/events/featured/cover.jpg\",\n  \"galleryImages\": [\n    \"https://res.cloudinary.com/your-cloud-name/image/upload/v1234567890/welltalk/events/gallery/photo1.jpg\",\n    \"https://res.cloudinary.com/your-cloud-name/image/upload/v1234567890/welltalk/events/gallery/photo2.jpg\",\n    \"https://res.cloudinary.com/your-cloud-name/image/upload/v1234567890/welltalk/events/gallery/photo3.jpg\"\n  ],\n  \"status\": \"published\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/events",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "events"]
+        },
+        "description": "Create an event with cover image and gallery images from Cloudinary.\n\nUse URLs returned from /api/v1/upload/featured and /api/v1/upload/gallery endpoints."
+      }
+    },
+    {
+      "name": "Get Blog with Images",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/v1/blogs/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "blogs", "1"]
+        },
+        "description": "Retrieve a blog with its featured image URL.\n\nResponse will include featuredImage as a Cloudinary CDN URL."
+      }
+    },
+    {
+      "name": "Get Event with Images",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/v1/events/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "events", "1"]
+        },
+        "description": "Retrieve an event with its cover image and gallery images.\n\nResponse will include coverImage and galleryImages as Cloudinary CDN URLs."
+      }
+    },
+    {
+      "name": "Get All Blogs",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/v1/blogs?page=1&limit=10",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "blogs"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Get all blogs with pagination.\n\nResponse will include featured images as Cloudinary CDN URLs."
+      }
+    },
+    {
+      "name": "Get All Events",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5000/api/v1/events?page=1&limit=10",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "events"],
+          "query": [
+            {
+              "key": "page",
+              "value": "1"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Get all events with pagination.\n\nResponse will include cover images and gallery images as Cloudinary CDN URLs."
+      }
+    },
+    {
+      "name": "Update Blog Featured Image",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"featuredImage\": \"https://res.cloudinary.com/your-cloud-name/image/upload/v1234567890/welltalk/blogs/featured/new-thumbnail.jpg\"\n}"
+        },
+        "url": {
+          "raw": "http://localhost:5000/api/v1/blogs/1",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5000",
+          "path": ["api", "v1", "blogs", "1"]
+        },
+        "description": "Update a blog's featured image with a new Cloudinary URL.\n\nRemember to delete the old image if not needed anymore."
+      }
+    }
+  ]
+}

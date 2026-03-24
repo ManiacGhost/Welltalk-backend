@@ -1,7 +1,38 @@
 const express = require('express');
 const multer = require('multer');
-const path = require('path');
 const router = express.Router();
+const {
+  uploadFeaturedImage,
+  uploadInlineImage,
+  uploadGalleryImages,
+  deleteFromCloudinary,
+} = require('../utils/cloudinaryService');
+const logger = require('../utils/logger');
+
+// Memory storage for multer (files stored in memory, not on disk)
+const storage = multer.memoryStorage();
+
+const upload = multer({
+  storage,
+  fileFilter: (req, file, cb) => {
+    const allowedMimes = [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/gif',
+      'image/svg+xml',
+    ];
+    if (allowedMimes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error('Only JPEG, PNG, WebP, GIF, and SVG images are allowed'));
+    }
+  },
+  limits: {
+    fileSize: 50 * 1024 * 1024, // 50MB
+    files: 10, // Maximum 10 files at once
+  },
+});
 
 // Base route for testing
 router.get('/', (req, res) => {
@@ -9,45 +40,20 @@ router.get('/', (req, res) => {
     success: true,
     message: 'Upload endpoints are available',
     endpoints: {
-      single: 'POST /api/v1/upload/single',
-      multiple: 'POST /api/v1/upload/multiple',
-      delete: 'DELETE /api/v1/upload/:filename'
-    }
+      featured: 'POST /api/v1/upload/featured',
+      inline: 'POST /api/v1/upload/inline',
+      gallery: 'POST /api/v1/upload/gallery',
+      delete: 'DELETE /api/v1/upload/delete',
+    },
   });
 });
 
-// Multer configuration for inline image uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    const uploadPath = path.join(__dirname, '../../uploads/inline/');
-    cb(null, uploadPath);
-  },
-  filename: (req, file, cb) => {
-    // Generate unique filename with timestamp and random string
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    const ext = path.extname(file.originalname);
-    cb(null, `inline-${uniqueSuffix}${ext}`);
-  },
-});
-
-const upload = multer({
-  storage,
-  fileFilter: (req, file, cb) => {
-    const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
-    if (allowedMimes.includes(file.mimetype)) {
-      cb(null, true);
-    } else {
-      cb(new Error('Only JPEG, PNG, WebP, GIF, and SVG images are allowed'));
-    }
-  },
-  limits: { 
-    fileSize: 50 * 1024 * 1024, // 50MB
-    files: 10 // Maximum 10 files at once
-  },
-});
-
-// Upload single inline image
-router.post('/single', upload.single('file'), (req, res) => {
+/**
+ * Upload featured/thumbnail image
+ * POST /api/v1/upload/featured
+ * Body: file (single image), type (blogs|articles|events)
+ */
+router.post('/featured', upload.single('file'), async (req, res) => {
   try {
     if (!req.file) {
       return res.status(400).json({
@@ -56,23 +62,74 @@ router.post('/single', upload.single('file'), (req, res) => {
       });
     }
 
-    const fileUrl = `uploads/inline/${req.file.filename}`;
-    
+    // Get type from query or body (default to 'blogs')
+    const type = req.body.type || req.query.type || 'blogs';
+
+    const imageUrl = await uploadFeaturedImage(
+      req.file.buffer,
+      req.file.originalname,
+      type
+    );
+
     res.status(200).json({
-      url: fileUrl,
-      path: fileUrl
+      success: true,
+      url: imageUrl,
+      message: 'Featured image uploaded successfully',
     });
   } catch (error) {
+    logger.error('Error uploading featured image:', error);
     res.status(500).json({
       success: false,
-      message: 'Error uploading file',
+      message: 'Error uploading featured image',
       error: error.message,
     });
   }
 });
 
-// Upload multiple inline images
-router.post('/multiple', upload.array('files', 10), (req, res) => {
+/**
+ * Upload inline/body image (used in rich text editors)
+ * POST /api/v1/upload/inline
+ * Body: file (single image), type (blogs|articles|events)
+ */
+router.post('/inline', upload.single('file'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        message: 'No file provided',
+      });
+    }
+
+    // Get type from query or body (default to 'blogs')
+    const type = req.body.type || req.query.type || 'blogs';
+
+    const imageUrl = await uploadInlineImage(
+      req.file.buffer,
+      req.file.originalname,
+      type
+    );
+
+    res.status(200).json({
+      success: true,
+      url: imageUrl,
+      message: 'Inline image uploaded successfully',
+    });
+  } catch (error) {
+    logger.error('Error uploading inline image:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error uploading inline image',
+      error: error.message,
+    });
+  }
+});
+
+/**
+ * Upload multiple gallery images
+ * POST /api/v1/upload/gallery
+ * Body: files (multiple images), type (events|blogs|articles)
+ */
+router.post('/gallery', upload.array('files', 10), async (req, res) => {
   try {
     if (!req.files || req.files.length === 0) {
       return res.status(400).json({
@@ -81,42 +138,53 @@ router.post('/multiple', upload.array('files', 10), (req, res) => {
       });
     }
 
-    const uploadedFiles = req.files.map(file => `uploads/inline/${file.filename}`);
+    // Get type from query or body (default to 'events')
+    const type = req.body.type || req.query.type || 'events';
+
+    const buffers = req.files.map((file) => file.buffer);
+    const fileNames = req.files.map((file) => file.originalname);
+
+    const imageUrls = await uploadGalleryImages(buffers, fileNames, type);
 
     res.status(200).json({
-      urls: uploadedFiles,
-      paths: uploadedFiles
+      success: true,
+      urls: imageUrls,
+      message: 'Gallery images uploaded successfully',
     });
   } catch (error) {
+    logger.error('Error uploading gallery images:', error);
     res.status(500).json({
       success: false,
-      message: 'Error uploading files',
+      message: 'Error uploading gallery images',
       error: error.message,
     });
   }
 });
 
-// Delete inline image
-router.delete('/:filename', (req, res) => {
+/**
+ * Delete image from Cloudinary
+ * DELETE /api/v1/upload/delete
+ * Body: { imageUrl: "cloudinary-url" }
+ */
+router.delete('/delete', async (req, res) => {
   try {
-    const fs = require('fs');
-    const filename = req.params.filename;
-    const filePath = path.join(__dirname, '../../uploads/inline/', filename);
+    const { imageUrl } = req.body;
 
-    // Check if file exists
-    if (fs.existsSync(filePath)) {
-      fs.unlinkSync(filePath);
-      res.status(200).json({
-        success: true,
-        message: 'Image deleted successfully',
-      });
-    } else {
-      res.status(404).json({
+    if (!imageUrl) {
+      return res.status(400).json({
         success: false,
-        message: 'Image not found',
+        message: 'Image URL is required',
       });
     }
+
+    await deleteFromCloudinary(imageUrl);
+
+    res.status(200).json({
+      success: true,
+      message: 'Image deleted successfully',
+    });
   } catch (error) {
+    logger.error('Error deleting image:', error);
     res.status(500).json({
       success: false,
       message: 'Error deleting image',
