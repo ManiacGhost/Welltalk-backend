@@ -1,13 +1,15 @@
 const express = require('express');
 const { body } = require('express-validator');
 const multer = require('multer');
+const path = require('path');
 const router = express.Router();
 const blogController = require('../controllers/blogController');
 
 // Multer configuration for file upload
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, './uploads/blogs/');
+    const uploadPath = path.join(__dirname, '../../uploads/blogs/');
+    cb(null, uploadPath);
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -17,14 +19,14 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage,
   fileFilter: (req, file, cb) => {
-    const allowedMimes = ['image/jpeg', 'image/png', 'image/webp'];
+    const allowedMimes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'];
     if (allowedMimes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error('Only JPEG, PNG, and WebP images are allowed'));
+      cb(new Error('Only JPEG, PNG, WebP, GIF, and SVG images are allowed'));
     }
   },
-  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB
+  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
 });
 
 // Validation middleware

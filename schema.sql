@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS `blogs` (
   `seoTitle` VARCHAR(255),
   `seoDescription` TEXT,
   `focusKeyword` VARCHAR(255),
+  `flag_category` VARCHAR(50) NOT NULL DEFAULT 'BLOG',
   `publishedAt` DATETIME,
   `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
@@ -35,6 +36,7 @@ CREATE TABLE IF NOT EXISTS `blogs` (
   INDEX `idx_categoryId` (`categoryId`),
   INDEX `idx_status` (`status`),
   INDEX `idx_publishedAt` (`publishedAt`),
+  INDEX `idx_flag_category` (`flag_category`),
   FOREIGN KEY (`categoryId`) REFERENCES `categories`(`id`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -57,4 +59,23 @@ CREATE TABLE IF NOT EXISTS `events` (
   INDEX `idx_slug` (`slug`),
   INDEX `idx_eventDate` (`eventDate`),
   INDEX `idx_status` (`status`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Create Contact Forms table
+CREATE TABLE IF NOT EXISTS `contact_forms` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` VARCHAR(255) NOT NULL,
+  `firstName` VARCHAR(255),
+  `lastName` VARCHAR(255),
+  `email` VARCHAR(255) NOT NULL,
+  `phone` VARCHAR(20),
+  `subject` VARCHAR(255) NOT NULL,
+  `message` TEXT NOT NULL,
+  `serviceType` ENUM('general', 'support', 'feedback', 'complaint') DEFAULT 'general',
+  `status` ENUM('pending', 'in-progress', 'resolved', 'closed') DEFAULT 'pending',
+  `createdAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updatedAt` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX `idx_status` (`status`),
+  INDEX `idx_createdAt` (`createdAt`),
+  INDEX `idx_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

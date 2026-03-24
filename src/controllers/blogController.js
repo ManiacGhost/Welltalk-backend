@@ -2,6 +2,70 @@ const Blog = require('../models/Blog');
 const Category = require('../models/Category');
 const { validationResult } = require('express-validator');
 const logger = require('../utils/logger');
+const path = require('path');
+const fs = require('fs');
+
+const normalizeUploadPath = (value) => {
+  if (!value || typeof value !== 'string') return null;
+
+  const raw = value.trim();
+  if (!raw) return null;
+
+  const uploadsIdx = raw.toLowerCase().indexOf('/uploads/');
+  if (uploadsIdx >= 0) return raw.slice(uploadsIdx + 1).replace(/\\/g, '/');
+  if (raw.toLowerCase().startsWith('uploads/')) return raw.replace(/\\/g, '/');
+  return null;
+};
+
+const fileExists = async (relativePath) => {
+  if (!relativePath) return false;
+  const absolutePath = path.join(__dirname, '../../', relativePath);
+  try {
+    await fs.promises.access(absolutePath, fs.constants.F_OK);
+    return true;
+  } catch (e) {
+    return false;
+  }
+};
+
+const resolveImageWithInlineFallback = async (imagePath) => {
+  const normalized = normalizeUploadPath(imagePath);
+  if (!normalized) return imagePath || null;
+
+  if (await fileExists(normalized)) return normalized;
+
+  const fallbackPath = path.posix.join('uploads', 'inline', path.basename(normalized));
+  if (await fileExists(fallbackPath)) return fallbackPath;
+
+  return normalized;
+};
+
+const extractFirstImageFromContent = (content) => {
+  if (!content || typeof content !== 'string') return null;
+
+  const matches = content.match(/(?:https?:\/\/[^"'\s]+)?\/?uploads\/[^"'\s)]+/i);
+  if (!matches || !matches[0]) return null;
+
+  return normalizeUploadPath(matches[0]);
+};
+
+const enrichBlogImages = async (blog) => {
+  const plain = typeof blog.toJSON === 'function' ? blog.toJSON() : blog;
+  let resolvedFeaturedImage = await resolveImageWithInlineFallback(plain.featuredImage);
+
+  // If featured image is missing, use first uploads image from the article content.
+  if (!resolvedFeaturedImage) {
+    const contentImage = extractFirstImageFromContent(plain.content);
+    if (contentImage) {
+      resolvedFeaturedImage = await resolveImageWithInlineFallback(contentImage);
+    }
+  }
+
+  return {
+    ...plain,
+    featuredImage: resolvedFeaturedImage,
+  };
+};
 
 // Get all blogs with pagination
 const getAllBlogs = async (req, res) => {
@@ -9,21 +73,22 @@ const getAllBlogs = async (req, res) => {
     const { page = 1, limit = 10, status, categoryId } = req.query;
     const offset = (page - 1) * limit;
 
-    const where = {};
+    // Build where clause - only return BLOGs, not ARTICLES
+    const where = { flag_category: 'BLOG' };
     if (status) where.status = status;
     if (categoryId) where.categoryId = categoryId;
 
-    const { count, rows } = await Blog.findAndCountAll({
+    const { count, rows: blogs } = await Blog.findAndCountAll({
       where,
       include: [{ model: Category, as: 'category' }],
-      offset: parseInt(offset),
+      order: [['publishedAt', 'DESC']],
       limit: parseInt(limit),
-      order: [['createdAt', 'DESC']],
+      offset: parseInt(offset),
     });
 
     res.status(200).json({
       success: true,
-      data: rows,
+      data: blogs,
       pagination: {
         total: count,
         page: parseInt(page),
@@ -58,9 +123,11 @@ const getBlogById = async (req, res) => {
       });
     }
 
+    const blogWithResolvedImage = await enrichBlogImages(blog);
+
     res.status(200).json({
       success: true,
-      data: blog,
+      data: blogWithResolvedImage,
     });
   } catch (error) {
     logger.error('Error fetching blog:', error);
@@ -80,6 +147,7 @@ const createBlog = async (req, res) => {
       return res.status(400).json({ success: false, errors: errors.array() });
     }
 
+    // Extract fields including flag_category
     const {
       title,
       slug,
@@ -93,9 +161,26 @@ const createBlog = async (req, res) => {
       seoTitle,
       seoDescription,
       focusKeyword,
+      flag_category,
     } = req.body;
 
-    const featuredImage = req.file ? req.file.path : null;
+    // Validate categoryId if provided
+    if (categoryId) {
+      const category = await Category.findByPk(categoryId);
+      if (!category) {
+        return res.status(400).json({
+          success: false,
+          message: `Category with ID ${categoryId} does not exist`,
+        });
+      }
+    }
+
+    const bodyFeaturedImage = normalizeUploadPath(
+      req.body.featuredImage || req.body.image || req.body.coverImage || req.body.thumbnail
+    );
+    const featuredImage = req.file
+      ? path.join('uploads', 'blogs', req.file.filename)
+      : bodyFeaturedImage;
 
     const blog = await Blog.create({
       title,
@@ -111,6 +196,7 @@ const createBlog = async (req, res) => {
       seoTitle,
       seoDescription,
       focusKeyword,
+      flag_category: flag_category || 'BLOG',
       publishedAt: status === 'published' ? new Date() : null,
     });
 
@@ -150,6 +236,7 @@ const updateBlog = async (req, res) => {
       seoTitle,
       seoDescription,
       focusKeyword,
+      flag_category,
     } = req.body;
 
     const blog = await Blog.findByPk(id);
@@ -161,7 +248,23 @@ const updateBlog = async (req, res) => {
       });
     }
 
-    const featuredImage = req.file ? req.file.path : undefined;
+    // Validate categoryId if provided
+    if (categoryId) {
+      const category = await Category.findByPk(categoryId);
+      if (!category) {
+        return res.status(400).json({
+          success: false,
+          message: `Category with ID ${categoryId} does not exist`,
+        });
+      }
+    }
+
+    const bodyFeaturedImage = normalizeUploadPath(
+      req.body.featuredImage || req.body.image || req.body.coverImage || req.body.thumbnail
+    );
+    const featuredImage = req.file
+      ? path.join('uploads', 'blogs', req.file.filename)
+      : bodyFeaturedImage;
 
     const updateData = {
       title: title || blog.title,
@@ -176,6 +279,7 @@ const updateBlog = async (req, res) => {
       seoTitle: seoTitle || blog.seoTitle,
       seoDescription: seoDescription || blog.seoDescription,
       focusKeyword: focusKeyword || blog.focusKeyword,
+      flag_category: flag_category || blog.flag_category,
     };
 
     if (featuredImage) updateData.featuredImage = featuredImage;

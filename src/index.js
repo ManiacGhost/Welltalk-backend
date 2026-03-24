@@ -12,11 +12,15 @@ const { connectDB } = require('./config/database');
 const categoryRoutes = require('./routes/categoryRoutes');
 const blogRoutes = require('./routes/blogRoutes');
 const eventRoutes = require('./routes/eventRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+const contactRoutes = require('./routes/contactRoutes');
+const articleRoutes = require('./routes/articleRoutes');
 
 // Import models to initialize them
 require('./models/Category');
 require('./models/Blog');
 require('./models/Event');
+require('./models/Contact');
 
 // Initialize Express App
 const app = express();
@@ -24,13 +28,49 @@ const PORT = process.env.PORT || 5000;
 
 // Middleware
 app.use(helmet()); // Security headers
+
+// CORS Configuration - Allow multiple origins
+const corsOrigins = process.env.CORS_ORIGIN 
+  ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim())
+  : ['http://localhost:3000'];
+
+const normalizeOrigin = (origin) => {
+  if (origin === "*") return "*";
+  return origin?.trim();
+};
+
+const baseAllowedOrigins = [
+  ...corsOrigins,
+  'https://welltalk.vercel.app',  // Your hosted frontend
+  'https://welltalk.netlify.app', // Alternative hosting
+  "*",       // Wildcard - allow all origins
+  'http://127.0.0.1:3000',       // Localhost alternative
+].map((origin) => normalizeOrigin(origin)).filter(Boolean);
+
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || 'http://localhost:3000',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // If wildcard is in allowed origins, allow all
+    if (baseAllowedOrigins.includes("*")) {
+      return callback(null, true);
+    }
+    
+    if (baseAllowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      console.log('CORS blocked origin:', origin);
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
-})); // Enable CORS
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+}));
 app.use(morgan('combined')); // Logging
-app.use(express.json()); // Parse JSON requests
-app.use(express.urlencoded({ extended: true })); // Parse URL-encoded data
+app.use(express.json({ limit: '50mb' })); // Parse JSON requests with increased limit
+app.use(express.urlencoded({ extended: true, limit: '50mb' })); // Parse URL-encoded data with increased limit
 
 // Serve static files for uploads
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
@@ -39,6 +79,9 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/blogs', blogRoutes);
 app.use('/api/v1/events', eventRoutes);
+app.use('/api/v1/upload', uploadRoutes);
+app.use('/api/v1/contact-forms', contactRoutes);
+app.use('/api/v1/articles', articleRoutes);
 
 // Health Check Route
 app.get('/api/health', (req, res) => {
@@ -54,6 +97,9 @@ app.get('/api/v1', (req, res) => {
       blogs: '/api/v1/blogs',
       categories: '/api/v1/categories',
       events: '/api/v1/events',
+      uploads: '/api/v1/upload',
+      'contact-forms': '/api/v1/contact-forms',
+      articles: '/api/v1/articles',
     },
     status: 'active',
   });

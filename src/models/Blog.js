@@ -65,6 +65,11 @@ const Blog = sequelize.define('Blog', {
     type: DataTypes.STRING(255),
     allowNull: true,
   },
+  flag_category: {
+    type: DataTypes.STRING(50),
+    allowNull: false,
+    defaultValue: 'BLOG',
+  },
   publishedAt: {
     type: DataTypes.DATE,
     allowNull: true,
