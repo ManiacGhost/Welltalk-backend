@@ -1,0 +1,498 @@
+{
+  "info": {
+    "_postman_id": "newsletter-api-collection",
+    "name": "Welltalk Newsletter API",
+    "description": "Complete Postman collection for Newsletter Management API testing",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Newsletter - Public",
+      "item": [
+        {
+          "name": "Subscribe to Newsletter",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"newuser@example.com\",\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"preferences\": {\n    \"frequency\": \"weekly\",\n    \"categories\": [\"wellness\", \"fitness\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/newsletter/subscribe",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "newsletter", "subscribe"]
+            },
+            "description": "Subscribe a new user to the newsletter with email and optional preferences"
+          },
+          "response": []
+        },
+        {
+          "name": "Subscribe with Minimal Info",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"simple@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/newsletter/subscribe",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "newsletter", "subscribe"]
+            },
+            "description": "Subscribe with just an email address"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subscriber by Email",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/newsletter/subscriber/newuser@example.com",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "newsletter", "subscriber", "newuser@example.com"]
+            },
+            "description": "Retrieve subscriber information by email address"
+          },
+          "response": []
+        },
+        {
+          "name": "Unsubscribe from Newsletter",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"reason\": \"Receiving too many emails\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/newsletter/unsubscribe/newuser@example.com",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "newsletter", "unsubscribe", "newuser@example.com"]
+            },
+            "description": "Unsubscribe a user from the newsletter with optional reason"
+          },
+          "response": []
+        },
+        {
+          "name": "Unsubscribe without Reason",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/newsletter/unsubscribe/newuser@example.com",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "newsletter", "unsubscribe", "newuser@example.com"]
+            },
+            "description": "Unsubscribe without providing a reason"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Subscriber Preferences",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"preferences\": {\n    \"frequency\": \"bi-weekly\",\n    \"categories\": [\"fitness\", \"meditation\", \"nutrition\"]\n  }\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/newsletter/subscriber/newuser@example.com/preferences",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "newsletter", "subscriber", "newuser@example.com", "preferences"]
+            },
+            "description": "Update subscription preferences including frequency and content categories"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Newsletter - Admin",
+      "item": [
+        {
+          "name": "Get All Subscribers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}",
+                "disabled": false
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/newsletter/subscribers?page=1&limit=50&status=subscribed",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "newsletter", "subscribers"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                },
+                {
+                  "key": "status",
+                  "value": "subscribed"
+                }
+              ]
+            },
+            "description": "Get paginated list of all newsletter subscribers with optional filters"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Subscribers - Page 1",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/newsletter/subscribers?page=1&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "newsletter", "subscribers"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "20"
+                }
+              ]
+            },
+            "description": "Get first page of subscribers (20 per page)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Unsubscribed Subscribers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/newsletter/subscribers?status=unsubscribed",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "newsletter", "subscribers"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "unsubscribed"
+                }
+              ]
+            },
+            "description": "Get all unsubscribed users"
+          },
+          "response": []
+        },
+        {
+          "name": "Send Newsletter to All Subscribers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Welltalk Weekly - Your Weekly Wellness Guide\",\n  \"htmlContent\": \"<html><body><h1>Welcome to Welltalk Weekly!</h1><p>This week we're featuring:</p><ul><li>New meditation techniques</li><li>Fitness tips for beginners</li><li>Nutrition guide</li></ul><p>Thanks for being part of our wellness community!</p></body></html>\",\n  \"textContent\": \"Welcome to Welltalk Weekly! This week we're featuring: New meditation techniques, Fitness tips for beginners, Nutrition guide.\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/newsletter/send",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "newsletter", "send"]
+            },
+            "description": "Send newsletter to all active subscribers with HTML and optional plain text content"
+          },
+          "response": []
+        },
+        {
+          "name": "Send Simple Newsletter",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"subject\": \"Quick Update from Welltalk\",\n  \"htmlContent\": \"<p>Here's what's new this week...</p>\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/newsletter/send",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "newsletter", "send"]
+            },
+            "description": "Send newsletter with minimal required fields"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Newsletter Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{admin_token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/newsletter/stats",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "newsletter", "stats"]
+            },
+            "description": "Get comprehensive newsletter statistics including subscriber counts, email metrics, and engagement rates"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Test Scenarios",
+      "item": [
+        {
+          "name": "Complete Subscription Flow",
+          "item": [
+            {
+              "name": "1. Subscribe New User",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/newsletter/subscribe",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "newsletter", "subscribe"]
+                }
+              }
+            },
+            {
+              "name": "2. Verify Subscription",
+              "request": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/newsletter/subscriber/testuser@example.com",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "newsletter", "subscriber", "testuser@example.com"]
+                }
+              }
+            },
+            {
+              "name": "3. Update Preferences",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"preferences\": {\n    \"frequency\": \"daily\",\n    \"categories\": [\"wellness\", \"fitness\", \"meditation\"]\n  }\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/newsletter/subscriber/testuser@example.com/preferences",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "newsletter", "subscriber", "testuser@example.com", "preferences"]
+                }
+              }
+            },
+            {
+              "name": "4. Unsubscribe",
+              "request": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"reason\": \"Testing unsubscribe flow\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/newsletter/unsubscribe/testuser@example.com",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "newsletter", "unsubscribe", "testuser@example.com"]
+                }
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bulk Newsletter Workflow",
+          "item": [
+            {
+              "name": "1. Get Current Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/newsletter/stats",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "newsletter", "stats"]
+                }
+              }
+            },
+            {
+              "name": "2. View Active Subscribers",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/newsletter/subscribers?status=subscribed&limit=10",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "newsletter", "subscribers"],
+                  "query": [
+                    {
+                      "key": "status",
+                      "value": "subscribed"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              }
+            },
+            {
+              "name": "3. Send Newsletter",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  },
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"subject\": \"Wellness Update - Your Path to Better Health\",\n  \"htmlContent\": \"<html><body><h2>Wellness Update</h2><p>This week's updates from Welltalk...</p></body></html>\"\n}"
+                },
+                "url": {
+                  "raw": "{{base_url}}/api/v1/newsletter/send",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "newsletter", "send"]
+                }
+              }
+            },
+            {
+              "name": "4. Check Updated Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{admin_token}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{base_url}}/api/v1/newsletter/stats",
+                  "host": ["{{base_url}}"],
+                  "path": ["api", "v1", "newsletter", "stats"]
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:5000",
+      "type": "string"
+    },
+    {
+      "key": "admin_token",
+      "value": "your_admin_jwt_token_here",
+      "type": "string"
+    }
+  ]
+}
