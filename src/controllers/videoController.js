@@ -371,6 +371,78 @@ const getVideoStats = async (req, res) => {
 };
 
 /**
+ * Search videos
+ * GET /api/v1/videos/search?q=query
+ */
+const searchVideos = async (req, res) => {
+  try {
+    const { q, page = 1, limit = 10, status = 'published', category } = req.query;
+    const offset = (page - 1) * limit;
+
+    // Validate search query
+    if (!q || q.trim().length < 2) {
+      return res.status(400).json({
+        success: false,
+        message: 'Search query must be at least 2 characters',
+      });
+    }
+
+    const searchQuery = `%${q.trim()}%`;
+    const { Op } = require('sequelize');
+
+    // Build where clause with search conditions
+    const where = {
+      [Op.and]: [
+        {
+          [Op.or]: [
+            { title: { [Op.like]: searchQuery } },
+            { description: { [Op.like]: searchQuery } },
+            { category: { [Op.like]: searchQuery } },
+          ],
+        },
+      ],
+    };
+
+    // Add status filter if provided
+    if (status) {
+      where[Op.and].push({ status });
+    }
+
+    // Add category filter if provided (in addition to search)
+    if (category) {
+      where[Op.and].push({ category });
+    }
+
+    const { count, rows: videos } = await Video.findAndCountAll({
+      where,
+      order: [['displayOrder', 'ASC']],
+      limit: parseInt(limit),
+      offset: parseInt(offset),
+    });
+
+    res.status(200).json({
+      success: true,
+      data: videos,
+      query: q,
+      pagination: {
+        total: count,
+        page: parseInt(page),
+        limit: parseInt(limit),
+        pages: Math.ceil(count / limit),
+      },
+      message: `Found ${count} video(s) matching "${q}"`,
+    });
+  } catch (error) {
+    logger.error('Error searching videos:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Error searching videos',
+      error: error.message,
+    });
+  }
+};
+
+/**
  * Helper function to extract metadata from video URL
  */
 const extractVideoMetadata = (videoUrl) => {
@@ -410,6 +482,7 @@ module.exports = {
   getFeaturedVideos,
   getVideosByCategory,
   getVideoById,
+  searchVideos,
   createVideo,
   updateVideo,
   deleteVideo,

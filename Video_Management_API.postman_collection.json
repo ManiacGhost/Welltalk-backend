@@ -89,6 +89,45 @@
           }
         },
         {
+          "name": "Search Videos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos/search?q=yoga&page=1&limit=10",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "yoga"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "published",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "Fitness",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Search videos by title, description, or category.\n\nQuery Parameters:\n- q (required): Search term (min 2 characters)\n- page (optional): Page number\n- limit (optional): Items per page\n- status (optional): Filter by status\n- category (optional): Filter by category"
+          }
+        },
+        {
           "name": "Get Video by ID",
           "request": {
             "method": "GET",
@@ -341,6 +380,47 @@
               ]
             },
             "description": "Use to display videos by category.\n\nReplace 'Wellness' with the category you want to display."
+          }
+        },
+        {
+          "name": "Homepage - Search Videos (Search Bar)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos/search?q=yoga&page=1&limit=10",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos", "search"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "yoga",
+                  "description": "Search term (searches title, description, category)"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "published",
+                  "disabled": true
+                },
+                {
+                  "key": "category",
+                  "value": "Fitness",
+                  "disabled": true,
+                  "description": "Optional category filter"
+                }
+              ]
+            },
+            "description": "Use this endpoint for search bar functionality on homepage.\n\nSearches across title, description, and category fields.\n\nMinimum 2 characters required for search term."
           }
         }
       ]

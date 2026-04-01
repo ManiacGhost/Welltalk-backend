@@ -90,6 +90,7 @@ curl http://localhost:5000/api/v1/videos?status=published&sortBy=displayOrder
 |----------|---------|
 | `GET /api/v1/videos/featured?limit=6` | Homepage featured videos section |
 | `GET /api/v1/videos?page=1&limit=10` | Video gallery with pagination |
+| `GET /api/v1/videos/search?q=query` | Search videos by title/description |
 | `GET /api/v1/videos/category/:category` | Videos by category |
 | `GET /api/v1/videos/:id` | Single video details |
 
@@ -166,6 +167,35 @@ curl http://localhost:5000/api/v1/videos?status=published&sortBy=displayOrder
     "createdAt": "2024-01-01T00:00:00Z"
   },
   "message": "Video created successfully"
+}
+```
+
+### Search Videos Response
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "Meditation Basics",
+      "description": "Learn meditation fundamentals",
+      "videoUrl": "https://www.youtube.com/watch?v=...",
+      "category": "Wellness",
+      "featured": true,
+      "metadata": {
+        "platform": "youtube",
+        "embedUrl": "https://www.youtube.com/embed/..."
+      }
+    }
+  ],
+  "query": "meditation",
+  "pagination": {
+    "total": 5,
+    "page": 1,
+    "limit": 10,
+    "pages": 1
+  },
+  "message": "Found 5 video(s) matching \"meditation\""
 }
 ```
 

@@ -33,7 +33,7 @@ CREATE TABLE videos (
   displayOrder INT DEFAULT 0,
   views INT DEFAULT 0,
   featured BOOLEAN DEFAULT false,
-  tags JSON DEFAULT '[]',
+  tags JSON,
   metadata JSON,
   createdAt DATETIME DEFAULT NOW(),
   updatedAt DATETIME DEFAULT NOW(),
@@ -156,7 +156,58 @@ GET /api/v1/videos/:id
 GET /api/v1/videos/1
 ```
 
-### Admin Endpoints (Protected)
+#### 5. Search Videos
+```
+GET /api/v1/videos/search
+```
+
+**Query Parameters:**
+- `q` (required): Search query (minimum 2 characters)
+- `page` (optional): Page number (default: 1)
+- `limit` (optional): Items per page (default: 10)
+- `status` (optional): Filter by status (default: published)
+- `category` (optional): Filter by category
+
+**Search Fields:**
+- Title
+- Description
+- Category
+
+**Example:**
+```
+GET /api/v1/videos/search?q=yoga&page=1&limit=10
+```
+
+**Response:**
+```json
+{
+  "success": true,
+  "data": [
+    {
+      "id": 1,
+      "title": "Yoga for Beginners",
+      "description": "Learn yoga fundamentals",
+      "videoUrl": "https://www.youtube.com/watch?v=...",
+      "category": "Fitness",
+      "featured": true,
+      "metadata": {
+        "platform": "youtube",
+        "embedUrl": "https://www.youtube.com/embed/..."
+      }
+    }
+  ],
+  "query": "yoga",
+  "pagination": {
+    "total": 5,
+    "page": 1,
+    "limit": 10,
+    "pages": 1
+  },
+  "message": "Found 5 video(s) matching \"yoga\""
+}
+```
+
+
 
 #### 5. Create Video
 ```
@@ -308,13 +359,29 @@ curl -X POST http://localhost:5000/api/v1/videos \
 curl http://localhost:5000/api/v1/videos/featured?limit=6
 ```
 
-### 3. Get Videos by Category
+### 3. Search Videos
+
+```bash
+curl http://localhost:5000/api/v1/videos/search?q=yoga
+```
+
+**With pagination:**
+```bash
+curl http://localhost:5000/api/v1/videos/search?q=yoga&page=1&limit=10
+```
+
+**Search with category filter:**
+```bash
+curl http://localhost:5000/api/v1/videos/search?q=wellness&category=Wellness&status=published
+```
+
+### 4. Get Videos by Category
 
 ```bash
 curl http://localhost:5000/api/v1/videos/category/Wellness?page=1&limit=10
 ```
 
-### 4. Update a Video
+### 5. Update a Video
 
 ```bash
 curl -X PUT http://localhost:5000/api/v1/videos/1 \
@@ -325,7 +392,7 @@ curl -X PUT http://localhost:5000/api/v1/videos/1 \
   }'
 ```
 
-### 5. Reorder Videos
+### 6. Reorder Videos
 
 ```bash
 curl -X PUT http://localhost:5000/api/v1/videos/reorder \
@@ -334,6 +401,7 @@ curl -X PUT http://localhost:5000/api/v1/videos/reorder \
     "videoIds": [5, 2, 1, 3, 4]
   }'
 ```
+
 
 ## Frontend Integration
 
@@ -348,10 +416,22 @@ async function getFeaturedVideos(limit = 6) {
   return await response.json();
 }
 
+// Search videos - for search bar
+async function searchVideos(query, page = 1, limit = 10) {
+  if (!query || query.trim().length < 2) {
+    return { success: false, message: 'Search query must be at least 2 characters' };
+  }
+  
+  const response = await fetch(
+    `http://localhost:5000/api/v1/videos/search?q=${encodeURIComponent(query)}&page=${page}&limit=${limit}`
+  );
+  return await response.json();
+}
+
 // Fetch all video categories
 async function getVideosByCategory(category) {
   const response = await fetch(
-    `http://localhost:5000/api/v1/videos/category/${category}`
+    `http://localhost:5000/api/v1/videos/category/${encodeURIComponent(category)}`
   );
   return await response.json();
 }
@@ -395,6 +475,69 @@ function VideoGallery({ videos }) {
   );
 }
 
+// Search component for video search bar
+function VideoSearchBar() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const [hasSearched, setHasSearched] = useState(false);
+
+  const handleSearch = async (e) => {
+    const searchTerm = e.target.value;
+    setQuery(searchTerm);
+    setError('');
+
+    // Only search if query is at least 2 characters
+    if (searchTerm.length < 2) {
+      setResults([]);
+      setHasSearched(false);
+      return;
+    }
+
+    setLoading(true);
+    setHasSearched(true);
+
+    const result = await searchVideos(searchTerm, 1, 10);
+    
+    if (result.success) {
+      setResults(result.data);
+    } else {
+      setError(result.message || 'Error searching videos');
+      setResults([]);
+    }
+    
+    setLoading(false);
+  };
+
+  return (
+    <div className="video-search">
+      <input
+        type="text"
+        placeholder="Search videos (min 2 characters)..."
+        value={query}
+        onChange={handleSearch}
+        className="search-input"
+      />
+      
+      {loading && <p className="loading">Searching...</p>}
+      
+      {error && <p className="error">{error}</p>}
+      
+      {hasSearched && results.length === 0 && !loading && (
+        <p className="no-results">No videos found matching "{query}"</p>
+      )}
+      
+      {results.length > 0 && (
+        <div className="search-results">
+          <p className="result-count">Found {results.length} video(s)</p>
+          <VideoGallery videos={results} />
+        </div>
+      )}
+    </div>
+  );
+}
+
 // Admin panel: Manage videos
 function AdminVideoManager() {
   const [videos, setVideos] = useState([]);
@@ -414,6 +557,81 @@ function AdminVideoManager() {
   );
 }
 ```
+
+### Advanced Search Component with Debouncing
+
+```javascript
+import { useCallback, useRef, useEffect } from 'react';
+
+function AdvancedVideoSearch() {
+  const [query, setQuery] = useState('');
+  const [results, setResults] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const debounceTimer = useRef(null);
+
+  const performSearch = async (searchTerm) => {
+    if (searchTerm.length < 2) {
+      setResults([]);
+      return;
+    }
+
+    setLoading(true);
+    const result = await searchVideos(searchTerm);
+    
+    if (result.success) {
+      setResults(result.data);
+    } else {
+      setResults([]);
+    }
+    
+    setLoading(false);
+  };
+
+  const handleInputChange = useCallback((e) => {
+    const value = e.target.value;
+    setQuery(value);
+
+    // Debounce search - wait 300ms after user stops typing
+    if (debounceTimer.current) {
+      clearTimeout(debounceTimer.current);
+    }
+
+    debounceTimer.current = setTimeout(() => {
+      performSearch(value);
+    }, 300);
+  }, []);
+
+  return (
+    <div className="video-search-advanced">
+      <input
+        type="text"
+        placeholder="Search wellness videos..."
+        value={query}
+        onChange={handleInputChange}
+        className="search-input"
+      />
+      
+      {loading && <div className="spinner">Searching...</div>}
+      
+      <div className="results-container">
+        {results.map(video => (
+          <div key={video.id} className="result-item">
+            <img src={video.thumbnailUrl} alt={video.title} />
+            <div className="result-info">
+              <h4>{video.title}</h4>
+              <p>{video.description?.substring(0, 100)}...</p>
+              <span className="category">{video.category}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default AdvancedVideoSearch;
+```
+
 
 ## Platform Support
 
@@ -509,6 +727,7 @@ This will run the migration file `005-create-videos.js` and create the videos ta
 | Method | Endpoint | Purpose | Auth |
 |--------|----------|---------|------|
 | GET | `/api/v1/videos` | Get all videos | ❌ |
+| GET | `/api/v1/videos/search` | Search videos | ❌ |
 | GET | `/api/v1/videos/featured` | Get featured videos | ❌ |
 | GET | `/api/v1/videos/category/:category` | Get videos by category | ❌ |
 | GET | `/api/v1/videos/:id` | Get single video | ❌ |

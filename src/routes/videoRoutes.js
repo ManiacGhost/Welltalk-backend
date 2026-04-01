@@ -41,6 +41,9 @@ const validateVideo = [
 // Get featured videos (for homepage) - MUST be before /:id
 router.get('/featured', videoController.getFeaturedVideos);
 
+// Search videos - MUST be before /:id
+router.get('/search', videoController.searchVideos);
+
 // Get video statistics (Admin) - MUST be before /:id
 router.get('/stats', videoController.getVideoStats);
 
