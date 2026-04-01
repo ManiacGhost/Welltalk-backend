@@ -15,12 +15,14 @@ const eventRoutes = require('./routes/eventRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const articleRoutes = require('./routes/articleRoutes');
+const videoRoutes = require('./routes/videoRoutes');
 
 // Import models to initialize them
 require('./models/Category');
 require('./models/Blog');
 require('./models/Event');
 require('./models/Contact');
+require('./models/Video');
 
 // Initialize Express App
 const app = express();
@@ -82,6 +84,7 @@ app.use('/api/v1/events', eventRoutes);
 app.use('/api/v1/upload', uploadRoutes);
 app.use('/api/v1/contact-forms', contactRoutes);
 app.use('/api/v1/articles', articleRoutes);
+app.use('/api/v1/videos', videoRoutes);
 
 // Health Check Route
 app.get('/api/health', (req, res) => {
@@ -100,6 +103,7 @@ app.get('/api/v1', (req, res) => {
       uploads: '/api/v1/upload',
       'contact-forms': '/api/v1/contact-forms',
       articles: '/api/v1/articles',
+      videos: '/api/v1/videos',
     },
     status: 'active',
   });

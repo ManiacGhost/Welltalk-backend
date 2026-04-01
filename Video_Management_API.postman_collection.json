@@ -1,0 +1,349 @@
+{
+  "info": {
+    "_postman_id": "video-management-api",
+    "name": "Welltalk Video Management API",
+    "description": "Video management endpoints for homepage video display",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Public Endpoints",
+      "item": [
+        {
+          "name": "Get All Videos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos?page=1&limit=10&status=published&sortBy=displayOrder",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "published"
+                },
+                {
+                  "key": "sortBy",
+                  "value": "displayOrder"
+                }
+              ]
+            },
+            "description": "Fetch all videos with pagination and filtering.\n\nsortBy options: displayOrder, newest, oldest, views"
+          }
+        },
+        {
+          "name": "Get Featured Videos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos/featured?limit=6",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos", "featured"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "6"
+                }
+              ]
+            },
+            "description": "Get featured videos for homepage display.\n\nReturns videos marked as featured and published."
+          }
+        },
+        {
+          "name": "Get Videos by Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos/category/Wellness?page=1&limit=10",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos", "category", "Wellness"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Get videos filtered by category.\n\nReplace 'Wellness' with the desired category."
+          }
+        },
+        {
+          "name": "Get Video by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos", "1"]
+            },
+            "description": "Get a single video by ID.\n\nNote: This endpoint increments the view count."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Endpoints",
+      "item": [
+        {
+          "name": "Create Video - YouTube",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Yoga for Beginners\",\n  \"description\": \"A complete guide to starting your yoga journey\",\n  \"videoUrl\": \"https://www.youtube.com/watch?v=dQw4w9WgXcQ\",\n  \"duration\": 600,\n  \"category\": \"Fitness\",\n  \"status\": \"published\",\n  \"displayOrder\": 0,\n  \"featured\": true,\n  \"tags\": [\"yoga\", \"fitness\", \"beginner\"]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos"]
+            },
+            "description": "Create a new video with YouTube URL."
+          }
+        },
+        {
+          "name": "Create Video - Vimeo",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Mindfulness Meditation\",\n  \"description\": \"A guided mindfulness meditation session\",\n  \"videoUrl\": \"https://vimeo.com/123456789\",\n  \"duration\": 1200,\n  \"category\": \"Wellness\",\n  \"status\": \"published\",\n  \"displayOrder\": 1,\n  \"featured\": false,\n  \"tags\": [\"meditation\", \"wellness\", \"mindfulness\"]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos"]
+            },
+            "description": "Create a new video with Vimeo URL."
+          }
+        },
+        {
+          "name": "Create Video - Custom URL with Thumbnail",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Wellness Testimonial\",\n  \"description\": \"Customer testimonial about our wellness program\",\n  \"videoUrl\": \"https://custom-video-platform.com/videos/testimonial-123\",\n  \"thumbnailUrl\": \"https://custom-cdn.com/thumbnails/testimonial-123.jpg\",\n  \"duration\": 180,\n  \"category\": \"Testimonials\",\n  \"status\": \"published\",\n  \"displayOrder\": 2,\n  \"featured\": true,\n  \"tags\": [\"testimonial\", \"customer\"]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos"]
+            },
+            "description": "Create a video with custom URL and custom thumbnail."
+          }
+        },
+        {
+          "name": "Update Video",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Title\",\n  \"featured\": false,\n  \"status\": \"draft\",\n  \"displayOrder\": 5\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos", "1"]
+            },
+            "description": "Update an existing video (all fields optional)."
+          }
+        },
+        {
+          "name": "Delete Video",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos/1",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos", "1"]
+            },
+            "description": "Delete a video permanently."
+          }
+        },
+        {
+          "name": "Reorder Videos",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"videoIds\": [5, 2, 1, 3, 4]\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos/reorder",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos", "reorder"]
+            },
+            "description": "Reorder videos by providing array of video IDs in desired order.\n\nVideos will be assigned displayOrder based on array position."
+          }
+        },
+        {
+          "name": "Get Video Statistics",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos/stats",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos", "stats"]
+            },
+            "description": "Get admin dashboard statistics about videos."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Homepage Integration Example",
+      "item": [
+        {
+          "name": "Homepage - Featured Videos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos/featured?limit=6",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos", "featured"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "6"
+                }
+              ]
+            },
+            "description": "Use this endpoint on homepage to display featured videos.\n\nReturns up to 6 featured, published videos in display order."
+          }
+        },
+        {
+          "name": "Homepage - Get All Videos (Paginated)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos?page=1&limit=10&status=published",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "status",
+                  "value": "published"
+                }
+              ]
+            },
+            "description": "Use for video gallery page with pagination.\n\nShows all published videos in display order."
+          }
+        },
+        {
+          "name": "Homepage - Category Videos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5000/api/v1/videos/category/Wellness?page=1&limit=10",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5000",
+              "path": ["api", "v1", "videos", "category", "Wellness"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Use to display videos by category.\n\nReplace 'Wellness' with the category you want to display."
+          }
+        }
+      ]
+    }
+  ]
+}
